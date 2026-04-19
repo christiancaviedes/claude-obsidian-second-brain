@@ -1,0 +1,299 @@
+# ============================================
+# Claude Obsidian Second Brain - Configuration
+# ============================================
+# Main configuration file for the processing pipeline
+
+# --------------------------------------------
+# API Settings
+# --------------------------------------------
+api:
+  # Claude model to use for processing
+  # Options: claude-sonnet-4-20250514, claude-opus-4-20250514, claude-3-5-haiku-20241022
+  model: claude-sonnet-4-20250514
+
+  # Maximum tokens for API responses
+  # Higher values allow longer responses but cost more
+  max_tokens: 4096
+
+  # Temperature for response generation
+  # 0.0 = deterministic, 1.0 = creative
+  # Recommended: 0.3-0.5 for consistent extraction
+  temperature: 0.3
+
+  # Request timeout in seconds
+  timeout: 120
+
+  # Maximum retries on API failure
+  max_retries: 3
+
+  # Delay between retries (seconds)
+  retry_delay: 2
+
+# --------------------------------------------
+# Input/Output Paths
+# --------------------------------------------
+paths:
+  # Directory containing Claude conversation exports
+  # Supports JSON exports from Claude web interface
+  input_dir: ./exports
+
+  # Output directory for generated Obsidian vault
+  output_dir: ./output
+
+  # Cache directory for intermediate processing
+  cache_dir: ./.cache
+
+  # Logs directory
+  logs_dir: ./logs
+
+# --------------------------------------------
+# Agent Configuration
+# --------------------------------------------
+agents:
+  # Maximum number of concurrent agents
+  # Higher values = faster processing but more API calls
+  max_concurrent: 5
+
+  # Agent timeout in seconds
+  timeout: 300
+
+  # Enable agent progress logging
+  verbose: true
+
+  # Retry failed agent tasks
+  retry_failed: true
+
+  # Maximum retries per agent task
+  max_retries: 2
+
+# --------------------------------------------
+# Conversation Processing
+# --------------------------------------------
+processing:
+  # Minimum conversation length to process (messages)
+  min_messages: 3
+
+  # Maximum conversation length before chunking
+  max_messages_per_chunk: 50
+
+  # Skip conversations older than (days, 0 = no limit)
+  max_age_days: 0
+
+  # Include Claude's responses in notes
+  include_assistant_responses: true
+
+  # Extract code blocks to separate files
+  extract_code_blocks: true
+
+  # Languages to extract code for
+  code_languages:
+    - python
+    - javascript
+    - typescript
+    - bash
+    - sql
+    - yaml
+    - json
+
+# --------------------------------------------
+# Tagging Configuration
+# --------------------------------------------
+tagging:
+  # Path to taxonomy file
+  taxonomy_file: ./config/tags_taxonomy.yaml
+
+  # Maximum tags per note
+  max_tags_per_note: 7
+
+  # Minimum confidence for auto-tagging (0.0-1.0)
+  min_confidence: 0.6
+
+  # Enable hierarchical tags (e.g., #tech/python)
+  hierarchical_tags: true
+
+  # Tag prefix (empty for none)
+  tag_prefix: ""
+
+  # Auto-generate tags from content
+  auto_generate: true
+
+  # Suggest new tags for taxonomy
+  suggest_new_tags: true
+
+# --------------------------------------------
+# Obsidian Formatting
+# --------------------------------------------
+obsidian:
+  # Note title format
+  # Available variables: {date}, {topic}, {id}
+  title_format: "{date} - {topic}"
+
+  # Date format for titles and frontmatter
+  date_format: "%Y-%m-%d"
+
+  # Frontmatter fields to include
+  frontmatter:
+    - created
+    - modified
+    - tags
+    - source
+    - conversation_id
+    - topics
+
+  # Enable wiki-style links [[Note Name]]
+  wiki_links: true
+
+  # Enable backlinks section in notes
+  backlinks_section: true
+
+  # Template for note structure
+  note_template: |
+    ---
+    {frontmatter}
+    ---
+
+    # {title}
+
+    {summary}
+
+    ## Key Points
+
+    {key_points}
+
+    ## Details
+
+    {content}
+
+    ## Related
+
+    {related_links}
+
+  # Folder structure within vault
+  # Options: flat, by-date, by-topic, by-project
+  folder_structure: by-topic
+
+  # Create MOC (Map of Content) files
+  create_mocs: true
+
+  # Create daily notes index
+  create_daily_index: true
+
+# --------------------------------------------
+# Knowledge Graph Settings
+# --------------------------------------------
+knowledge_graph:
+  # Enable knowledge graph generation
+  enabled: true
+
+  # Output file for graph data
+  output_file: ./output/knowledge_graph.json
+
+  # Minimum edge weight to include
+  min_edge_weight: 0.3
+
+  # Maximum nodes in graph
+  max_nodes: 1000
+
+  # Include orphan nodes
+  include_orphans: false
+
+  # Graph layout algorithm
+  # Options: force-directed, hierarchical, circular
+  layout: force-directed
+
+  # Node types to include
+  node_types:
+    - topic
+    - concept
+    - person
+    - project
+    - date
+
+  # Enable community detection
+  detect_communities: true
+
+  # Export format
+  # Options: json, graphml, gexf
+  export_format: json
+
+# --------------------------------------------
+# Summary Generation
+# --------------------------------------------
+summaries:
+  # Generate weekly summaries
+  weekly: true
+
+  # Generate monthly summaries
+  monthly: true
+
+  # Generate topic summaries
+  by_topic: true
+
+  # Maximum summary length (words)
+  max_length: 500
+
+  # Include action items
+  include_actions: true
+
+  # Include key decisions
+  include_decisions: true
+
+# --------------------------------------------
+# Quality Settings
+# --------------------------------------------
+quality:
+  # Remove duplicate content
+  deduplicate: true
+
+  # Similarity threshold for deduplication (0.0-1.0)
+  similarity_threshold: 0.85
+
+  # Spell check notes
+  spell_check: false
+
+  # Validate internal links
+  validate_links: true
+
+  # Generate quality report
+  quality_report: true
+
+# --------------------------------------------
+# Performance Settings
+# --------------------------------------------
+performance:
+  # Enable caching
+  cache_enabled: true
+
+  # Cache expiry (hours)
+  cache_expiry: 24
+
+  # Batch size for processing
+  batch_size: 10
+
+  # Enable parallel processing
+  parallel: true
+
+  # Memory limit (MB, 0 = no limit)
+  memory_limit: 0
+
+# --------------------------------------------
+# Logging Settings
+# --------------------------------------------
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: INFO
+
+  # Log to file
+  file_logging: true
+
+  # Log file rotation
+  max_log_files: 5
+
+  # Max log file size (MB)
+  max_log_size: 10
+
+  # Include timestamps
+  timestamps: true
+
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -1,0 +1,446 @@
+# ============================================
+# Claude Obsidian Second Brain - Tags Taxonomy
+# ============================================
+# Pre-built taxonomy for organizing knowledge
+# Customize this file to match your domains and interests
+
+# --------------------------------------------
+# Technical
+# --------------------------------------------
+technical:
+  description: Software development and technology topics
+  tags:
+    coding:
+      description: General programming and code-related
+      subtags:
+        - algorithms
+        - data-structures
+        - refactoring
+        - optimization
+        - patterns
+
+    debugging:
+      description: Problem-solving and bug fixing
+      subtags:
+        - troubleshooting
+        - error-handling
+        - logging
+        - profiling
+
+    architecture:
+      description: System design and software architecture
+      subtags:
+        - microservices
+        - monolith
+        - serverless
+        - event-driven
+        - domain-driven-design
+
+    devops:
+      description: Development operations and infrastructure
+      subtags:
+        - ci-cd
+        - docker
+        - kubernetes
+        - terraform
+        - monitoring
+        - deployment
+
+    security:
+      description: Security and authentication
+      subtags:
+        - authentication
+        - authorization
+        - encryption
+        - vulnerabilities
+        - compliance
+
+    databases:
+      description: Data storage and retrieval
+      subtags:
+        - sql
+        - nosql
+        - migrations
+        - queries
+        - performance
+
+    apis:
+      description: API design and integration
+      subtags:
+        - rest
+        - graphql
+        - webhooks
+        - authentication
+        - rate-limiting
+
+    testing:
+      description: Quality assurance and testing
+      subtags:
+        - unit-tests
+        - integration-tests
+        - e2e-tests
+        - tdd
+        - mocking
+
+    languages:
+      description: Programming languages
+      subtags:
+        - python
+        - javascript
+        - typescript
+        - rust
+        - go
+        - java
+        - sql
+
+    frameworks:
+      description: Frameworks and libraries
+      subtags:
+        - react
+        - vue
+        - django
+        - fastapi
+        - nextjs
+        - nodejs
+
+    ai-ml:
+      description: Artificial intelligence and machine learning
+      subtags:
+        - llm
+        - embeddings
+        - fine-tuning
+        - prompts
+        - agents
+        - rag
+
+# --------------------------------------------
+# Business
+# --------------------------------------------
+business:
+  description: Business and organizational topics
+  tags:
+    strategy:
+      description: Strategic planning and direction
+      subtags:
+        - goals
+        - okrs
+        - roadmap
+        - competitive-analysis
+
+    planning:
+      description: Project and resource planning
+      subtags:
+        - timeline
+        - milestones
+        - resources
+        - estimation
+
+    analysis:
+      description: Business analysis and research
+      subtags:
+        - market-research
+        - user-research
+        - data-analysis
+        - metrics
+
+    decisions:
+      description: Decision-making and choices
+      subtags:
+        - tradeoffs
+        - risks
+        - alternatives
+        - rationale
+
+    meetings:
+      description: Meeting notes and discussions
+      subtags:
+        - standup
+        - retrospective
+        - planning
+        - review
+        - one-on-one
+
+    stakeholders:
+      description: Stakeholder management
+      subtags:
+        - communication
+        - requirements
+        - feedback
+        - alignment
+
+    product:
+      description: Product management
+      subtags:
+        - features
+        - user-stories
+        - backlog
+        - prioritization
+        - mvp
+
+    finance:
+      description: Financial topics
+      subtags:
+        - budget
+        - costs
+        - roi
+        - pricing
+
+# --------------------------------------------
+# Learning
+# --------------------------------------------
+learning:
+  description: Knowledge acquisition and education
+  tags:
+    concepts:
+      description: Core concepts and fundamentals
+      subtags:
+        - definitions
+        - principles
+        - mental-models
+        - frameworks
+
+    tutorials:
+      description: Step-by-step guides
+      subtags:
+        - walkthrough
+        - how-to
+        - setup
+        - configuration
+
+    explanations:
+      description: Deep explanations and clarifications
+      subtags:
+        - why
+        - comparison
+        - analogy
+        - example
+
+    research:
+      description: Research and investigation
+      subtags:
+        - papers
+        - studies
+        - experiments
+        - findings
+
+    documentation:
+      description: Technical documentation
+      subtags:
+        - api-docs
+        - guides
+        - references
+        - specifications
+
+    courses:
+      description: Structured learning
+      subtags:
+        - lectures
+        - exercises
+        - certifications
+        - bootcamps
+
+    books:
+      description: Book notes and summaries
+      subtags:
+        - summaries
+        - quotes
+        - key-takeaways
+        - reviews
+
+# --------------------------------------------
+# Creative
+# --------------------------------------------
+creative:
+  description: Creative and generative work
+  tags:
+    writing:
+      description: Written content creation
+      subtags:
+        - drafts
+        - editing
+        - copy
+        - content-strategy
+
+    ideas:
+      description: Idea generation and exploration
+      subtags:
+        - inspiration
+        - possibilities
+        - what-if
+        - innovation
+
+    brainstorming:
+      description: Collaborative ideation
+      subtags:
+        - mind-mapping
+        - divergent
+        - convergent
+        - synthesis
+
+    design:
+      description: Design and visual thinking
+      subtags:
+        - ui
+        - ux
+        - wireframes
+        - mockups
+        - prototypes
+
+    storytelling:
+      description: Narrative and communication
+      subtags:
+        - narrative
+        - presentation
+        - pitch
+        - messaging
+
+# --------------------------------------------
+# Personal
+# --------------------------------------------
+personal:
+  description: Personal development and life
+  tags:
+    goals:
+      description: Personal and professional goals
+      subtags:
+        - short-term
+        - long-term
+        - career
+        - life
+
+    reflection:
+      description: Self-reflection and introspection
+      subtags:
+        - lessons-learned
+        - retrospective
+        - insights
+        - growth
+
+    productivity:
+      description: Efficiency and effectiveness
+      subtags:
+        - workflows
+        - habits
+        - tools
+        - time-management
+
+    health:
+      description: Physical and mental wellbeing
+      subtags:
+        - exercise
+        - nutrition
+        - sleep
+        - stress
+        - mindfulness
+
+    relationships:
+      description: Personal and professional relationships
+      subtags:
+        - networking
+        - mentorship
+        - collaboration
+        - feedback
+
+    career:
+      description: Career development
+      subtags:
+        - skills
+        - opportunities
+        - interviews
+        - negotiations
+
+# --------------------------------------------
+# Projects
+# --------------------------------------------
+# Add your specific projects here
+projects:
+  description: Project-specific tags
+  tags:
+    active:
+      description: Currently active projects
+      subtags: []
+      # Example:
+      # subtags:
+      #   - project-alpha
+      #   - website-redesign
+      #   - api-migration
+
+    completed:
+      description: Completed projects
+      subtags: []
+
+    on-hold:
+      description: Paused or on-hold projects
+      subtags: []
+
+    ideas:
+      description: Project ideas and proposals
+      subtags: []
+
+# --------------------------------------------
+# Status Tags
+# --------------------------------------------
+status:
+  description: Content status indicators
+  tags:
+    action-required:
+      description: Items needing action
+      subtags:
+        - todo
+        - follow-up
+        - waiting
+        - blocked
+
+    reference:
+      description: Reference material
+      subtags:
+        - bookmark
+        - resource
+        - template
+        - snippet
+
+    review:
+      description: Items needing review
+      subtags:
+        - draft
+        - needs-update
+        - outdated
+        - verified
+
+# --------------------------------------------
+# Temporal Tags
+# --------------------------------------------
+temporal:
+  description: Time-based organization
+  tags:
+    urgency:
+      description: Time sensitivity
+      subtags:
+        - urgent
+        - soon
+        - someday
+        - archived
+
+    recurrence:
+      description: Recurring topics
+      subtags:
+        - daily
+        - weekly
+        - monthly
+        - quarterly
+        - annual
+
+# --------------------------------------------
+# Custom Tags
+# --------------------------------------------
+# Add your own custom categories below
+custom:
+  description: User-defined custom tags
+  tags: {}
+  # Example:
+  # tags:
+  #   my-category:
+  #     description: My custom category
+  #     subtags:
+  #       - tag-one
+  #       - tag-two
