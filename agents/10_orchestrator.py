@@ -305,42 +305,62 @@ class OrchestratorAgent:
         """
         if self.agents.get(agent_name) is None:
             try:
+                api_config = self.config.get("api", {})
+                agent_config = self.config.get("agents", {})
+                graph_config = self.config.get("knowledge_graph", {})
+                verbose = bool(agent_config.get("verbose", True))
+                model = str(api_config.get("model", "claude-sonnet-4-20250514"))
                 if agent_name == "parser":
                     from agents.parser import ParserAgent
 
-                    self.agents["parser"] = ParserAgent(self.config)
+                    self.agents["parser"] = ParserAgent(verbose=verbose)
                 elif agent_name == "cleaner":
                     from agents.cleaner import CleanerAgent
 
-                    self.agents["cleaner"] = CleanerAgent(self.config)
+                    self.agents["cleaner"] = CleanerAgent(verbose=verbose)
                 elif agent_name == "tagger":
                     from agents.tagger import TaggerAgent
 
-                    self.agents["tagger"] = TaggerAgent(self.config)
+                    self.agents["tagger"] = TaggerAgent(
+                        model=model,
+                        verbose=verbose,
+                        max_retries=int(api_config.get("max_retries", 3)),
+                    )
                 elif agent_name == "extractor":
                     from agents.extractor import ExtractorAgent
 
-                    self.agents["extractor"] = ExtractorAgent(self.config)
+                    self.agents["extractor"] = ExtractorAgent(
+                        model=model,
+                        max_concurrent=int(agent_config.get("max_concurrent", 5)),
+                        max_retries=int(api_config.get("max_retries", 3)),
+                        retry_delay=float(api_config.get("retry_delay", 2)),
+                    )
                 elif agent_name == "graph":
                     from agents.graph_builder import GraphBuilderAgent
 
-                    self.agents["graph"] = GraphBuilderAgent(self.config)
+                    self.agents["graph"] = GraphBuilderAgent(
+                        min_shared_tags=1,
+                    )
                 elif agent_name == "linker":
                     from agents.linker import LinkerAgent
 
-                    self.agents["linker"] = LinkerAgent(self.config)
+                    self.agents["linker"] = LinkerAgent(
+                        min_connection_weight=float(
+                            graph_config.get("min_edge_weight", 0.3)
+                        )
+                    )
                 elif agent_name == "moc":
                     from agents.moc_generator import MOCGeneratorAgent
 
-                    self.agents["moc"] = MOCGeneratorAgent(self.config)
+                    self.agents["moc"] = MOCGeneratorAgent(model=model)
                 elif agent_name == "formatter":
                     from agents.formatter import FormatterAgent
 
-                    self.agents["formatter"] = FormatterAgent(self.config)
+                    self.agents["formatter"] = FormatterAgent()
                 elif agent_name == "indexer":
                     from agents.indexer import IndexerAgent
 
-                    self.agents["indexer"] = IndexerAgent(self.config)
+                    self.agents["indexer"] = IndexerAgent()
             except ImportError as e:
                 self.logger.warning(f"Could not import {agent_name} agent: {e}")
                 # Return a mock agent for development/testing
@@ -647,7 +667,7 @@ class OrchestratorAgent:
         progress.update(task_id, completed=20)
 
         agent = self._get_agent("tagger")
-        tagged = await agent.process(cleaned)
+        tagged = await agent.process(cleaned, self._load_taxonomy())
 
         progress.update(task_id, completed=80)
 
@@ -702,8 +722,8 @@ class OrchestratorAgent:
         pipeline_data["graph"] = graph
 
         # Count nodes and edges
-        node_count = len(graph.nodes()) if hasattr(graph, "nodes") else 0
-        edge_count = len(graph.edges()) if hasattr(graph, "edges") else 0
+        node_count = len(graph.nodes) if hasattr(graph, "nodes") else 0
+        edge_count = len(graph.edges) if hasattr(graph, "edges") else 0
 
         return StageResult(
             stage_name="graph",
@@ -745,7 +765,8 @@ class OrchestratorAgent:
         """MOC stage: Generate Maps of Content."""
         start_time = time.time()
         linked = pipeline_data.get("linked", [])
-        graph = pipeline_data.get("graph")
+        runtime_graph = pipeline_data.get("graph")
+        graph = runtime_graph.to_model() if hasattr(runtime_graph, "to_model") else runtime_graph
 
         progress.update(task_id, completed=20)
 
@@ -787,7 +808,7 @@ class OrchestratorAgent:
             success=True,
             duration_seconds=time.time() - start_time,
             items_processed=len(linked) + len(mocs),
-            items_output=len(formatted),
+            items_output=formatted.notes_created + formatted.mocs_created,
         )
 
     async def _stage_index(
@@ -795,14 +816,16 @@ class OrchestratorAgent:
     ) -> StageResult:
         """Index stage: Create master index."""
         start_time = time.time()
-        formatted = pipeline_data.get("formatted", [])
+        linked = pipeline_data.get("linked", [])
         mocs = pipeline_data.get("mocs", [])
+        runtime_graph = pipeline_data.get("graph")
+        graph = runtime_graph.to_model() if hasattr(runtime_graph, "to_model") else runtime_graph
         output_path = pipeline_data["output_path"]
 
         progress.update(task_id, completed=20)
 
         agent = self._get_agent("indexer")
-        index = await agent.process(formatted, mocs, output_path)
+        index = await agent.process(linked, mocs, graph, output_path)
 
         progress.update(task_id, completed=80)
 
@@ -812,9 +835,42 @@ class OrchestratorAgent:
             stage_name="index",
             success=True,
             duration_seconds=time.time() - start_time,
-            items_processed=len(formatted),
+            items_processed=len(linked) + len(mocs),
             items_output=1,
         )
+
+    def _load_taxonomy(self) -> dict[str, Any]:
+        """Load the configured nested taxonomy into the tagger's flat format."""
+        taxonomy_path = Path(
+            self.config.get("tagging", {}).get(
+                "taxonomy_file", "./config/tags_taxonomy.yaml"
+            )
+        )
+        if not taxonomy_path.exists():
+            self.logger.warning("Taxonomy file not found: %s", taxonomy_path)
+            return {"categories": [], "tags": [], "category_descriptions": {}}
+
+        with taxonomy_path.open("r", encoding="utf-8") as handle:
+            raw_taxonomy = yaml.safe_load(handle) or {}
+
+        categories: list[str] = []
+        tags: list[str] = []
+        descriptions: dict[str, str] = {}
+        for category, category_data in raw_taxonomy.items():
+            if not isinstance(category_data, dict):
+                continue
+            categories.append(str(category))
+            descriptions[str(category)] = str(category_data.get("description", ""))
+            for tag, tag_data in category_data.get("tags", {}).items():
+                tags.append(str(tag))
+                if isinstance(tag_data, dict):
+                    tags.extend(str(item) for item in tag_data.get("subtags", []))
+
+        return {
+            "categories": categories,
+            "tags": sorted(set(tags)),
+            "category_descriptions": descriptions,
+        }
 
     def _can_continue_after_failure(self, stage_name: str) -> bool:
         """

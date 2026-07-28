@@ -1,6 +1,7 @@
 # Claude Obsidian Second Brain
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/christiancaviedes/claude-obsidian-second-brain/actions/workflows/ci.yml/badge.svg)](https://github.com/christiancaviedes/claude-obsidian-second-brain/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/christiancaviedes/claude-obsidian-second-brain.svg?style=social)](https://github.com/christiancaviedes/claude-obsidian-second-brain)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/christiancaviedes/claude-obsidian-second-brain/pulls)
@@ -15,7 +16,7 @@ This 10-agent pipeline parses your Claude exports, extracts knowledge, and gener
 
 ## Features
 
-- **10-agent parallel pipeline** — each agent does one job well: parse, clean, tag, analyze, link, cluster, write, generate MOCs, index, validate
+- **10-agent coordinated pipeline** — focused stages parse, clean, tag, extract, graph, link, generate MOCs, format, and index, with orchestration and checkpoints
 - **Auto-generated wikilinks** — semantic cross-linking across conversations with configurable similarity threshold
 - **Maps of Content (MOCs)** — topic overview pages auto-generated for every major cluster
 - **Rich frontmatter** — every note tagged with date, topics, key decisions, action items, and source metadata
@@ -33,18 +34,19 @@ This 10-agent pipeline parses your Claude exports, extracts knowledge, and gener
 # 1. Clone and install
 git clone https://github.com/christiancaviedes/claude-obsidian-second-brain.git
 cd claude-obsidian-second-brain
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+python3.11 -m venv venv && source venv/bin/activate
+python -m pip install -e .
 
 # 2. Configure
-cp config/settings.example.yaml config/settings.yaml
-# Add your ANTHROPIC_API_KEY to config/settings.yaml
+cp .env.example .env
+# Add your ANTHROPIC_API_KEY to .env
 
 # 3. Export your Claude conversations
 # claude.ai → Settings → Account → Export Data → Download
 
 # 4. Run the pipeline
-python -m src.main --input /path/to/claude-export.json --output ./my-second-brain
+claude-obsidian validate examples/sample-export.json
+claude-obsidian run /path/to/claude-export.json --output ./my-second-brain
 
 # 5. Open in Obsidian
 # File > Open Vault > select "my-second-brain" folder
@@ -52,25 +54,19 @@ python -m src.main --input /path/to/claude-export.json --output ./my-second-brai
 
 ---
 
-## Demo
+## Verified CLI
 
+The repository ships a synthetic export so its public claims can be reproduced without
+using private conversation data:
+
+```bash
+claude-obsidian validate examples/sample-export.json
+python -m pytest
 ```
-$ python -m src.main --input claude-export.json --output ./brain
 
-[01/10] Parser      Extracted 847 conversations (JSON format)
-[02/10] Cleaner     Removed 23 duplicates, normalized encoding
-[03/10] Tagger      Extracted 312 unique topics across all conversations
-[04/10] Analyzer    Identified 1,204 key decisions and 389 action items
-[05/10] Linker      Found 4,891 cross-references (threshold: 0.70)
-[06/10] Clusterer   Formed 28 knowledge clusters
-[07/10] Writer      Generated 847 markdown notes with frontmatter
-[08/10] MOC Gen     Created 28 Maps of Content + master index
-[09/10] Indexer     Built timeline, topic index, statistics page
-[10/10] Validator   Checked 4,891 links — 0 broken
-
-Done in 18 minutes. Vault ready at ./brain
-Open it in Obsidian to explore your knowledge graph.
-```
+CI runs those checks on Python 3.10, 3.11, and 3.12. Runtime and output quality depend on
+export size, model selection, network latency, and configuration; this project does not
+publish benchmark numbers until they are produced by a versioned benchmark harness.
 
 **Sample generated note:**
 
@@ -161,14 +157,14 @@ Claude Export (JSON/HTML)
          ▼
 ┌─────────────────────────────────────────────┐
 │              ANALYSIS LAYER                 │
-│  04 Analyzer → 05 Linker → 06 Clusterer     │
+│  04 Extractor → 05 Graph → 06 Linker        │
 └─────────────────────────────────────────────┘
          │
          ▼
 ┌─────────────────────────────────────────────┐
 │             GENERATION LAYER                │
-│  07 Writer → 08 MOC Gen → 09 Indexer        │
-│                        → 10 Validator       │
+│  07 MOC Gen → 08 Formatter → 09 Indexer     │
+│                        → 10 Orchestrator    │
 └─────────────────────────────────────────────┘
          │
          ▼
@@ -180,13 +176,13 @@ Claude Export (JSON/HTML)
 | **01 Parser** | Ingests JSON/HTML exports, extracts conversations and metadata |
 | **02 Cleaner** | Normalizes text, removes duplicates, fixes encoding |
 | **03 Tagger** | Uses Claude to extract topics, categories, semantic tags |
-| **04 Analyzer** | Identifies key decisions, insights, action items, code blocks |
-| **05 Linker** | Finds semantic relationships for cross-linking |
-| **06 Clusterer** | Groups related conversations using graph analysis |
-| **07 Writer** | Generates markdown notes with frontmatter |
-| **08 MOC Generator** | Creates Maps of Content per topic cluster |
-| **09 Indexer** | Builds timeline, topic index, statistics pages |
-| **10 Validator** | Checks broken links, validates frontmatter, QA |
+| **04 Extractor** | Identifies key decisions, insights, action items, and code blocks |
+| **05 Graph Builder** | Builds relationships and knowledge communities |
+| **06 Linker** | Creates bidirectional wikilinks from graph relationships |
+| **07 MOC Generator** | Creates Maps of Content per category and topic |
+| **08 Formatter** | Writes markdown notes and MOCs with frontmatter |
+| **09 Indexer** | Builds timeline, topic, cluster, and statistics pages |
+| **10 Orchestrator** | Coordinates stages, retries, checkpoints, and summaries |
 
 ---
 
@@ -224,12 +220,9 @@ moc:
 
 ## Performance
 
-| Export Size | Conversations | Time (4 parallel agents) |
-|-------------|---------------|--------------------------|
-| Small | < 100 | ~2 min |
-| Medium | 100–500 | ~10 min |
-| Large | 500–2000 | ~30 min |
-| Very Large | 2000+ | ~1 hr |
+Performance varies with export size, enabled stages, model latency, and concurrency.
+Use the included sample and test suite to validate a specific environment. Reproducible
+benchmark datasets and reports are tracked as future release work.
 
 ---
 
@@ -238,17 +231,17 @@ moc:
 1. Go to [claude.ai](https://claude.ai)
 2. **Settings** → **Account** → **Export Data**
 3. Download the JSON or HTML export file
-4. Pass it to `--input`
+4. Pass it to `claude-obsidian run`
 
 ---
 
 ## Development
 
 ```bash
-pip install -r requirements-dev.txt
-python -m pytest tests/ -v
-ruff check src/
-mypy src/
+python -m pip install -e ".[dev]"
+python -m pytest
+ruff check .
+mypy agents main.py
 ```
 
 ---

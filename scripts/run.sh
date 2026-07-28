@@ -133,7 +133,7 @@ run_converter() {
     echo ""
 
     # Build command arguments
-    CMD_ARGS=("--input" "$input_path")
+    CMD_ARGS=("run" "$input_path")
 
     if [[ -n "$output_path" ]]; then
         CMD_ARGS+=("--output" "$output_path")
@@ -142,12 +142,10 @@ run_converter() {
     # Run main.py with arguments
     cd "$PROJECT_ROOT"
 
-    if [[ -f "$PROJECT_ROOT/src/main.py" ]]; then
-        python "$PROJECT_ROOT/src/main.py" "${CMD_ARGS[@]}"
-    elif [[ -f "$PROJECT_ROOT/main.py" ]]; then
+    if [[ -f "$PROJECT_ROOT/main.py" ]]; then
         python "$PROJECT_ROOT/main.py" "${CMD_ARGS[@]}"
     else
-        print_error "main.py not found in $PROJECT_ROOT or $PROJECT_ROOT/src"
+        print_error "main.py not found in $PROJECT_ROOT"
         deactivate
         exit 1
     fi

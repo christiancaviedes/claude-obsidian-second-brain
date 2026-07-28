@@ -26,12 +26,14 @@ from pathlib import Path
 from typing import Any, Optional
 
 import click
+from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
 # Initialize console for rich output
+load_dotenv()
 console = Console()
 
 

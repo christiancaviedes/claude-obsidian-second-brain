@@ -48,6 +48,7 @@ dependencies = [
     "pyyaml>=6.0",
     "aiohttp>=3.9.0",
     "networkx>=3.2",
+    "python-dotenv>=1.0",
     "python-dateutil>=2.8.0",
     "beautifulsoup4>=4.12.0",
     "lxml>=5.0.0",
@@ -84,7 +85,7 @@ claude-obsidian = "main:main"
 py-modules = ["main"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["agents*"]
 
 [tool.black]
 line-length = 100
@@ -137,7 +138,7 @@ exclude = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["src"]
+known-first-party = ["agents"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -185,7 +186,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["agents", "main"]
 branch = true
 omit = [
     "tests/*",
