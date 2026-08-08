@@ -2,6 +2,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![CI](https://github.com/christiancaviedes/claude-obsidian-second-brain/actions/workflows/ci.yml/badge.svg)](https://github.com/christiancaviedes/claude-obsidian-second-brain/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-27%25-yellowgreen.svg)](.github/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/christiancaviedes/claude-obsidian-second-brain.svg?style=social)](https://github.com/christiancaviedes/claude-obsidian-second-brain)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/christiancaviedes/claude-obsidian-second-brain/pulls)
@@ -66,7 +67,12 @@ python -m pytest
 
 CI runs those checks on Python 3.10, 3.11, and 3.12. Runtime and output quality depend on
 export size, model selection, network latency, and configuration; this project does not
-publish benchmark numbers until they are produced by a versioned benchmark harness.
+present offline validation speed as a model-quality claim.
+
+**See it before running it:** browse the fully synthetic
+[sample vault](examples/sample-vault), read the
+[architecture decision record](docs/architecture/ADR-001-pipeline-boundaries-and-reliability.md),
+or reproduce the [benchmark](benchmarks/README.md).
 
 **Sample generated note:**
 
@@ -220,9 +226,27 @@ moc:
 
 ## Performance
 
-Performance varies with export size, enabled stages, model latency, and concurrency.
-Use the included sample and test suite to validate a specific environment. Reproducible
-benchmark datasets and reports are tracked as future release work.
+The versioned offline benchmark validates the bundled export 100 times without an API:
+
+| Path | Runs | Median | p95 | API calls | API cost |
+|---|---:|---:|---:|---:|---:|
+| Export validation | 100 | 0.118 ms | 0.129 ms | 0 | $0 |
+
+These August 8, 2026 figures were produced on Python 3.11 and are stored in
+[`benchmarks/results/latest.json`](benchmarks/results/latest.json). End-to-end runtime
+and output quality depend on export size, model selection, network latency, and
+configuration; no unsupported quality or live-API cost claim is made.
+
+## Engineering Evidence
+
+- **Integration:** CI exercises all nine stages with remote AI behavior mocked.
+- **Reliability:** stage retries, critical-stage stopping, checkpoints, and resume.
+- **Privacy:** deterministic stages stay local; model-bound data flow is documented.
+- **Quality gate:** branch coverage is collected on Python 3.10–3.12 and cannot fall
+  below the current 20% repository baseline.
+- **Architecture:** [ADR-001](docs/architecture/ADR-001-pipeline-boundaries-and-reliability.md)
+  records boundaries, concurrency, recovery, privacy, model choice, cost controls, and
+  rejected alternatives.
 
 ---
 

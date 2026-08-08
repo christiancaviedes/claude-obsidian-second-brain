@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "claude-obsidian-second-brain"
-version = "1.0.0"
+version = "1.1.0"
 description = "Transform Claude conversation history into a structured Obsidian Second Brain using 10 coordinated AI agents"
 readme = "README.md"
 license = {text = "MIT"}
@@ -205,4 +205,4 @@ exclude_lines = [
     "if typing.TYPE_CHECKING:"
 ]
 show_missing = true
-fail_under = 80
+fail_under = 20

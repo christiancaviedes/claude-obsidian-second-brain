@@ -1,0 +1,10 @@
+{
+  "benchmark": "offline-export-validation",
+  "dataset": "examples/sample-export.json",
+  "runs": 100,
+  "median_ms": 0.118,
+  "p95_ms": 0.129,
+  "api_calls": 0,
+  "estimated_api_cost_usd": 0,
+  "generated_at": "2026-08-08T14:53:59.786522+00:00"
+}

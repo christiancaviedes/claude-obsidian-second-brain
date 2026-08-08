@@ -465,7 +465,8 @@ class OrchestratorAgent:
         # Calculate final statistics
         duration = time.time() - start_time
         total_conversations = len(pipeline_data.get("conversations", []))
-        total_notes = len(pipeline_data.get("formatted", []))
+        format_result = stage_results.get("format")
+        total_notes = format_result.items_output if format_result and format_result.success else 0
         total_mocs = len(pipeline_data.get("mocs", []))
 
         # Create result

@@ -61,7 +61,7 @@ def format_duration(seconds: float) -> str:
 
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="claude-obsidian")
+@click.version_option(version="1.1.0", prog_name="claude-obsidian")
 def cli() -> None:
     """
     Claude Obsidian Second Brain - Transform Claude conversations into Obsidian notes.
